@@ -1,8 +1,8 @@
 package com.example.membrodolaboratorio1.controller;
 
-import com.example.membrodolaboratorio1.consumer.KafkaConsumer;
-import com.example.membrodolaboratorio1.dto.Memoir;
-import com.example.membrodolaboratorio1.producer.KafkaProducer;
+import com.example.membrodolaboratorio1.dto.MemoirDTO;
+import com.example.membrodolaboratorio1.entity.Memoir;
+import com.example.membrodolaboratorio1.service.MemoirService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,23 +13,21 @@ import java.util.Collection;
 @RequestMapping("/memoir")
 public class MemoirController {
 
-    private final KafkaProducer kafkaProducer;
-    private final KafkaConsumer kafkaConsumer;
+    private final MemoirService memoirService;
 
-    public MemoirController(KafkaProducer kafkaProducer, KafkaConsumer kafkaConsumer){
-        this.kafkaProducer = kafkaProducer;
-        this.kafkaConsumer = kafkaConsumer;
+    public MemoirController(MemoirService memoirService) {
+        this.memoirService = memoirService;
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Memoir> createMemoir(@RequestBody Memoir memoir){
-        if(kafkaProducer.send(memoir))
+    public ResponseEntity<Memoir> createMemoir(@RequestBody MemoirDTO memoirDTO){
+        if(memoirService.createMemoir(memoirDTO))
             return new ResponseEntity<>(HttpStatus.CREATED);
         return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
     }
 
     @GetMapping("/getALl")
     public ResponseEntity<Collection<Memoir>> getMemoirs(){
-        return new ResponseEntity<>(kafkaConsumer.getRepository(), HttpStatus.OK);
+        return new ResponseEntity<>(memoirService.getAll(), HttpStatus.OK);
     }
 }
