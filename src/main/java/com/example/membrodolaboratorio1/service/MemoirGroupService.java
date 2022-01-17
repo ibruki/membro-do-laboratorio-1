@@ -4,7 +4,7 @@ import com.example.membrodolaboratorio1.dto.MemoirGroupDTO;
 import com.example.membrodolaboratorio1.entity.MemoirGroup;
 import com.example.membrodolaboratorio1.producer.KafkaProducer;
 import com.example.membrodolaboratorio1.repository.MemoirGroupRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.membrodolaboratorio1.repository.MemoirRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -13,18 +13,23 @@ import java.util.Collection;
 public class MemoirGroupService {
 
     private final MemoirGroupRepository memoirGroupRepository;
+    private final MemoirRepository memoirRepository;
     private KafkaProducer kafkaProducer;
-    private ObjectMapper objectMapper;
 
-    public MemoirGroupService(MemoirGroupRepository memoirGroupRepository, KafkaProducer kafkaProducer, ObjectMapper objectMapper) {
+    public MemoirGroupService(MemoirGroupRepository memoirGroupRepository, MemoirRepository memoirRepository, KafkaProducer kafkaProducer) {
         this.memoirGroupRepository = memoirGroupRepository;
+        this.memoirRepository = memoirRepository;
         this.kafkaProducer = kafkaProducer;
-        this.objectMapper = objectMapper;
     }
+
 
     public boolean createMemoirGroup(MemoirGroupDTO memoirGroupDTO){
-        return kafkaProducer.sendGroup(objectMapper.convertValue(memoirGroupDTO, MemoirGroup.class));
+        return kafkaProducer.sendGroup(new MemoirGroup(memoirGroupDTO.getName(), null));
     }
+
+//    public boolean addMemoirToGroup(String id, String group){
+//
+//    }
 
     public Collection<MemoirGroup> getAll(){
         return memoirGroupRepository.getAll();

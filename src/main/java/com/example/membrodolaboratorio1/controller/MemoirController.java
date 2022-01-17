@@ -26,7 +26,7 @@ public class MemoirController {
         return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
     }
 
-    @GetMapping("/getALl")
+    @GetMapping("/getAll")
     public ResponseEntity<Collection<Memoir>> getMemoirs(){
         return new ResponseEntity<>(memoirService.getAll(), HttpStatus.OK);
     }
